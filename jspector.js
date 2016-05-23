@@ -11,6 +11,7 @@ const PROXY_FUN_CLASS = 'zikjs.proxy.Function';
 const NEW_FUN_STM_PATTERN = 'new _TYPE_(_BODY_)';
 const NEW_FUN_DECL_PATTERN = 'const _VAR_ = new _TYPE_(_BODY_)';
 const SET_PATTERN = '_VAR_.set(_BODY_)';
+const GET_PATTERN = '_VAR_.get()';
 
 const defaultValue = obj => R.always(obj);
 const emptyArray = defaultValue([]);
@@ -28,7 +29,7 @@ const oneValueArray = obj => isNil(obj) ? emptyArray() : R.concat(emptyArray(), 
 const pushInitToArgs = R.compose(R.ifElse(isNil, emptyArray, oneValueArray), R.prop('init'));
 
 const nodeFunctionName = R.path([ 'id', 'name' ]);
-const nodeAssignmentName = side => R.path([ side, 'name' ]);
+//const nodeAssignmentName = side => R.path([ side, 'name' ]);
 
 const setNewExpression = R.assoc('type', 'NewExpression');
 
@@ -54,6 +55,7 @@ const isArrowFunctionExpression = propTypeEq('ArrowFunctionExpression');
 const isCallExpression = propTypeEq('CallExpression');
 const isFunctionDeclaration = propTypeEq('FunctionDeclaration');
 const isAssignmentExpression = propTypeEq('AssignmentExpression');
+const isIdentifier = propTypeEq('Identifier');
 const isFunctionExpressionNode = node => R.or(isFunctionExpression(node), isArrowFunctionExpression(node));
 
 //TODO make this Functional
@@ -88,6 +90,22 @@ const mapCallExpressionCallee = node => R.assoc('callee', processIfIsFunctionExp
 const processCallExpression = R.compose(mapCallExpressionCallee, mapCallExpressionArgs);
 const procesVariableDeclarator = R.ifElse(initIsFunctionExpression, functionProxy, variableProxy);
 
+const nodeLeftName = R.path([ 'left', 'name' ]);
+
+//TODO make this Functional
+const mapAssignmentExpression = node => {
+  const body = utils.node2Code(R.prop('right')(node));
+  return expressionBody(utils.code2Node(replaceVarAndBody(SET_PATTERN)(nodeLeftName(node), body)));
+};
+
+const initArgsPath = [ 'init', 'arguments' ];
+const nodeInitArgs = R.path(initArgsPath);
+
+//TODO make this Functional
+const processVariableDeclaratorNodeArg = argNode => expressionBody(utils.code2Node(replaceVar(R.prop('name')(argNode))(GET_PATTERN)));
+const mapArgNode = R.ifElse(isIdentifier, processVariableDeclaratorNodeArg, R.identity);
+const processVariableDeclaratorNodeArgs = node => R.assocPath(initArgsPath, nodeInitArgs(node).map(mapArgNode), node);
+
 const step1Visitor = R.cond([
   [ isCallExpression, processCallExpression ],
   [ isVariableDeclarator, procesVariableDeclarator ],
@@ -95,20 +113,21 @@ const step1Visitor = R.cond([
 ]);
 
 const step2Visitor = R.ifElse(isFunctionDeclaration, newFunctionDeclarationForNode, R.identity);
-
-const mapAssignmentExpression = node => {
-  const variable = R.path([ 'left', 'name' ])(node);
-  const body = utils.node2Code(R.prop('right')(node));
-  return utils.code2Node(replaceVarAndBody(SET_PATTERN)(variable, body));
-};
-
 const step3Visitor = R.ifElse(isAssignmentExpression, mapAssignmentExpression, R.identity);
+const step4Visitor = R.ifElse(isVariableDeclarator, processVariableDeclaratorNodeArgs, R.identity);
 
 const traverseWithVisitor = visitor => node => estraverse.replace(node, { enter: visitor });
 const traverseWithStep1Visitor = traverseWithVisitor(step1Visitor);
 const traverseWithStep2Visitor = traverseWithVisitor(step2Visitor);
 const traverseWithStep3Visitor = traverseWithVisitor(step3Visitor);
+const traverseWithStep4Visitor = traverseWithVisitor(step4Visitor);
 
-const proxify = R.compose(traverseWithStep3Visitor, traverseWithStep2Visitor, traverseWithStep1Visitor, utils.code2Node);
+const proxify = R.compose(
+  traverseWithStep4Visitor,
+  traverseWithStep3Visitor,
+  traverseWithStep2Visitor,
+  traverseWithStep1Visitor,
+  utils.code2Node
+);
 
 module.exports = proxify;

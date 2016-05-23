@@ -49,7 +49,11 @@ describe('jspector', () => {
     ],
     [
       'var x = 42; x = 0;',
-      'var x = new zikjs.proxy.Variable(42);x.set(0);;' //TODO remove the last ';'
+      'var x = new zikjs.proxy.Variable(42);x.set(0);'
+    ],
+    [
+      'var x = 42; var y = x;',
+      'var x = new zikjs.proxy.Variable(42);var y = new zikjs.proxy.Variable(x.get());'
     ]
   ];
 

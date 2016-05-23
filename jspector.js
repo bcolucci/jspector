@@ -5,8 +5,8 @@ const estraverse = require('estraverse');
 const acorn = require('acorn');
 const utils = require('./utils');
 
-const PROXY_VAR_CLASS = 'zikjs.proxy.Variable';
-const PROXY_FUN_CLASS = 'zikjs.proxy.Function';
+const PROXY_VAR_CLASS = 'jspector.Variable';
+const PROXY_FUN_CLASS = 'jspector.Function';
 
 const NEW_FUN_STM_PATTERN = 'new _TYPE_(_BODY_)';
 const NEW_FUN_DECL_PATTERN = 'const _VAR_ = new _TYPE_(_BODY_)';

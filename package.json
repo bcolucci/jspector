@@ -1,0 +1,37 @@
+{
+  "name": "jspector",
+  "version": "0.0.1",
+  "author": "Brice Colucci <brice.colucci@gmail.com>",
+  "description": "A JS lib that wrap variable set/get and function call to emit events.",
+  "license": "MIT",
+  "main": "jspector.js",
+  "keywords": [ "wrap", "inspect", "variable", "function", "setter", "getter", "call" ],
+  "dependencies": {
+    "acorn": "^3.1.0",
+    "astring": "^0.6.0",
+    "estraverse": "^4.2.0",
+    "ramda": "^0.21.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-jshint": "^2.0.1",
+    "gulp-load-plugins": "^1.2.2",
+    "gulp-mocha": "^2.2.0",
+    "gulp-watch": "^4.3.5",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0",
+    "mocha": "^2.4.5"
+  },
+  "homepage": "https://github.com/bcolucci/jspector",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bcolucci/jspector.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bcolucci/jspector/issues"
+  },
+  "scripts": {
+    "start": "gulp",
+    "test": "gulp test"
+  }
+}

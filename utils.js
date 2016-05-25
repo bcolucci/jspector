@@ -15,7 +15,7 @@ const printDepth = obj => {
 const jsonClone = R.compose(JSON.parse, JSON.stringify);
 
 const code2Node = acorn.parse;
-const node2Code = node => astring(node, { indent: '', lineEnd: '' });
+const node2Code = node => astring(node, { indent: '  ', lineEnd: '\n' });
 
 module.exports = {
   inspect,

@@ -8,7 +8,7 @@ const plugins = gulpLoad();
 
 const onError = err => console.error(err) || process.exit(1);
 
-const jsFiles = [ './utils.js', './jspector.js', './test.js' ];
+const jsFiles = [ './utils.js', './jspector.js', './jspector-client', './test.js' ];
 
 gulp.task('jshint', () => {
   return gulp.src(jsFiles)

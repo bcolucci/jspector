@@ -1,6 +1,6 @@
 {
   "name": "jspector",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "author": "Brice Colucci <brice.colucci@gmail.com>",
   "description": "A JS lib that wrap variable set/get and function call to emit events.",
   "license": "MIT",
